@@ -8,7 +8,13 @@ def scrape_apple_ids():
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
     }
-    
+    # 在 scrape_idfree.py 中添加错误处理
+try:
+    response = requests.get(url, headers=headers, timeout=10)
+    response.raise_for_status()  # 检查HTTP错误
+except Exception as e:
+    print(f"请求失败: {str(e)}")
+    exit(1)  # 明确退出代码
     try:
         response = requests.get(url, headers=headers)
         soup = BeautifulSoup(response.text, 'html.parser')
