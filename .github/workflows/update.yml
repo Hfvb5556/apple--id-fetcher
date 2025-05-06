@@ -1,32 +1,28 @@
-name: Update Apple IDs  # 工作流名称（可自定义）
+name: Update Apple IDs
+
 on:
   schedule:
-    - cron: "0 3 * * *"  # 每天UTC时间3点自动运行（北京时间11点）
-  workflow_dispatch:     # 允许手动触发
+    - cron: "0 3 * * *"  # 每天UTC时间3点（北京时间11点）
+  workflow_dispatch:      # 允许手动触发
 
 jobs:
   scrape:
-    runs-on: ubuntu-latest  # 使用GitHub的Linux虚拟机
+    runs-on: ubuntu-latest
     
     steps:
-      # 步骤1：获取仓库代码
       - uses: actions/checkout@v2
-    
-      # 步骤2：设置Python环境
+      
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: "3.9"
-    
-      # 步骤3：安装爬虫依赖库
+      
       - name: Install dependencies
         run: pip install requests beautifulsoup4
-    
-      # 步骤4：运行爬虫脚本
+      
       - name: Run scraper
         run: python scrape_idfree.py
-    
-      # 步骤5：自动提交更新
+      
       - name: Commit changes
         run: |
           git config --global user.name "GitHub Actions"
