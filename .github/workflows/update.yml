@@ -2,37 +2,45 @@ name: Update Apple IDs
 
 on:
   schedule:
-    - cron: "0 3 * * *"
-  workflow_dispatch:
+    - cron: "0 3 * * *"  # 每天UTC时间3点（北京时间11点）
+  workflow_dispatch:     # 允许手动触发
 
 jobs:
   scrape:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # 使用GitHub的Linux虚拟机
     
     steps:
-      - uses: actions/checkout@v2
-      
+      # 步骤1：获取仓库代码
+      - uses: actions/checkout@v4
+    
+      # 步骤2：缓存pip依赖（使用v4）
       - name: Cache pip
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-      
+          restore-keys: |
+            ${{ runner.os }}-pip-
+    
+      # 步骤3：设置Python环境
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: "3.9"
-      
+    
+      # 步骤4：安装爬虫依赖库
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install requests beautifulsoup4
-      
+    
+      # 步骤5：运行爬虫脚本
       - name: Run scraper
         run: |
-          python scrape_idfree.py || exit 0  # 即使失败也继续
-          cat apple_ids.json  # 打印结果
-      
+          python scrape_idfree.py
+          cat apple_ids.json  # 打印结果用于调试
+    
+      # 步骤6：自动提交更新
       - name: Commit changes
         if: success()
         run: |
